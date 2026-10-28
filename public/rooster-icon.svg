@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#064c66"/><stop offset="1" stop-color="#10283a"/></linearGradient><linearGradient id="plume" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff6958"/><stop offset="1" stop-color="#bd211f"/></linearGradient></defs>
+<rect width="512" height="512" rx="110" fill="url(#bg)"/>
+<circle cx="256" cy="278" r="182" fill="#f0f4ef" opacity="0.11"/>
+<!-- red comb -->
+<path d="M165 184 C117 142 119 111 144 104 C167 93 190 129 205 139 C193 91 204 62 232 63 C263 61 267 112 266 135 C279 99 316 94 334 117 C357 146 318 176 296 190 Z" fill="url(#plume)" stroke="#7c151d" stroke-width="11" stroke-linejoin="round"/>
+<!-- cock head and neck -->
+<path d="M165 215 C158 162 214 143 265 166 C301 181 328 209 328 262 C325 291 303 320 306 346 C311 385 348 396 363 437 L137 437 C143 402 181 380 179 352 C175 323 148 289 151 255 Z" fill="#fffaf0" stroke="#2c4455" stroke-width="11" stroke-linejoin="round"/>
+<!-- feathers -->
+<path d="M170 326 C194 347 209 349 231 353 M312 337 C286 355 278 363 272 382" fill="none" stroke="#bac9c9" stroke-width="12" stroke-linecap="round"/>
+<!-- wattle -->
+<path d="M253 304 C227 344 233 382 264 383 C294 381 293 347 274 317 Z" fill="#dc3b35" stroke="#8b2528" stroke-width="8"/>
+<!-- beak -->
+<path d="M250 265 L356 281 L271 315 C264 302 255 285 250 265" fill="#f3b746" stroke="#986220" stroke-width="9" stroke-linejoin="round"/>
+<path d="M273 304 L333 298" fill="none" stroke="#bd8222" stroke-width="6" stroke-linecap="round"/>
+<!-- eye patch -->
+<path d="M192 226 C217 204 260 217 273 247 C250 258 212 266 190 247 Z" fill="#e9ded4"/>
+<circle cx="233" cy="239" r="20" fill="#101f2a"/>
+<circle cx="240" cy="231" r="6" fill="#fff"/>
+<!-- stylized cheek -->
+<path d="M173 281 C190 297 214 305 232 305" fill="none" stroke="#d0d9d6" stroke-width="10" stroke-linecap="round"/>
+</svg>

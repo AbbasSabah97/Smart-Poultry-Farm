@@ -1,0 +1,2 @@
+farm_id,house_id,camera_id,date,broiler_age_days,lighting,recording_period,video_filename,source,observer,labels_reviewed,rights_or_consent_notes
+FARM01,HOUSE01,CAM01,2026-10-28,21,day,08:00-08:10,CAM01_2026-10-28.mp4,real,,,"Example only; replace with real records"

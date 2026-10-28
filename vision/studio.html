@@ -1,0 +1,76 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vision Studio | Smart Poultry Farm v0.5</title>
+<style>
+:root{--navy:#102633;--deep:#081923;--panel:#173645;--line:#416476;--blue:#00a0ca;--gold:#e8af49;--green:#5fcea3;--text:#edf5f8}
+*{box-sizing:border-box}body{margin:0;background:var(--deep);color:var(--text);font:14px Tahoma,'Segoe UI',Arial,sans-serif;line-height:1.55}
+header{background:var(--navy);border-bottom:3px solid var(--blue);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+h1{margin:0;font-size:19px}.sub{font-size:11px;color:#aecbd8}
+main{padding:14px;display:grid;grid-template-columns:260px minmax(350px,1fr) 325px;gap:13px;min-height:calc(100vh - 78px)}
+@media(max-width:1170px){main{grid-template-columns:230px 1fr}.side{grid-column:1/-1}}
+@media(max-width:800px){main{grid-template-columns:1fr}.side{grid-column:auto}}
+.card{background:var(--panel);border:1px solid var(--line);padding:12px;min-width:0;border-radius:7px}h2{font-size:15px;margin:0 0 12px;color:#b9f1f2}
+button,input,select,textarea{font:inherit}button{background:#275c75;color:white;padding:9px 12px;border:1px solid #5492a4;border-radius:4px;cursor:pointer}button:hover{background:#397c94}button.primary{background:#087c8f}button.warn{background:#77442d}button:disabled{opacity:.5;cursor:not-allowed}
+label{display:block;margin:8px 0 3px;color:#b9d4df;font-size:12px}input,select,textarea{display:block;width:100%;background:#081f2e;color:white;border:1px solid #557482;border-radius:4px;padding:8px;min-width:0}
+textarea{resize:vertical;min-height:72px}.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0}.row>button{flex:1}
+.stat{background:#092c3d;padding:8px;border:1px solid #2f7182;margin:5px 0;font-size:12px}
+.list{height:58vh;overflow:auto;border:1px solid #375262}.frame{display:block;text-align:right;width:100%;background:#153141;border:0;border-bottom:1px solid #345b68;color:#d0e8f0;cursor:pointer;padding:10px;font-size:12px}.frame.active{background:#24627a;color:white}.frame small{color:#99c4d6;display:block}
+#viewport{min-height:300px;background:#071018;border:1px solid #4e6d7e;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
+#imageCanvas{max-width:100%;height:auto;cursor:crosshair;touch-action:none;display:block}
+#status{min-height:28px;color:#b5efd7;padding:7px 3px}.tip{color:#9ebac6;font-size:12px}.warning{border-right:4px solid var(--gold);background:#423521;padding:10px;margin-top:12px;font-size:12px}
+#reviewHistory{max-height:180px;overflow:auto;font-size:12px}#reviewHistory p{padding:7px;border-bottom:1px solid #2c4b59}code{direction:ltr;display:inline-block;color:#beeaff}
+</style></head><body>
+<header><div><h1>SMART POULTRY FARM | VISION STUDIO</h1><div class="sub">وضع البحث والتوثيق — وسم الدواجن ومراجعة التنبيهات — لا يشخّص الأمراض ولا يتحكم بالمعدات</div></div><div class="row"><span id="syncState">بوابة محلية فقط</span><button id="refresh">تحديث</button></div></header>
+<main>
+ <section class="card"><h2>Dataset / الإطارات</h2><div id="stats" class="stat">جاري الاتصال...</div>
+  <label for="filter">عرض حسب الحالة</label><select id="filter"><option value="all">الكل</option><option value="unlabeled">غير موسوم</option><option value="labeled">موسوم</option><option value="empty">إطار فارغ ومؤكد</option></select>
+  <div id="frameList" class="list"></div><div class="tip">لإضافة فيديو: استخدم أمر الاستيراد الموضح في README. لا تُرسل الملفات إلى خوادم خارجية.</div>
+ </section>
+ <section class="card"><h2>Bounding Box Annotation</h2>
+  <div class="row"><strong id="frameTitle">اختر إطاراً</strong><span class="sub" id="frameSource"></span></div>
+  <div id="viewport"><canvas id="imageCanvas" width="960" height="540"></canvas></div>
+  <div class="row"><button id="undo">تراجع عن آخر مربع</button><button id="clear" class="warn">مسح المربعات</button><button id="next">الإطار التالي</button></div>
+  <p class="tip">اسحب بالماوس حول كل دجاجة لإنشاء مربع. الإحداثيات طبيعية بين 0 و1. لا تضع مربعات على معدات الحظيرة.</p>
+  <label for="frameTag">ملاحظة سلوكية على مستوى الإطار (غير تشخيصية)</label><select id="frameTag"><option value="unclassified">غير مصنّف</option><option value="normal_activity">نشاط عادي</option><option value="crowding">تجمع</option><option value="low_activity">حركة منخفضة</option><option value="poor_visibility">رؤية غير كافية</option><option value="review_requested">بحاجة إلى مراجعة</option></select>
+  <label for="frameNote">وصف الملاحظة</label><textarea id="frameNote" maxlength="1000" placeholder="سلوك ملحوظ، إضاءة، وقت، انقطاع ماء أو تهوية..."></textarea>
+  <label for="writeToken">رمز البوابة للكتابة (من نافذة START-MONITORING-DEMO)</label><input id="writeToken" type="password" autocomplete="off" placeholder="X-Poultry-Token" />
+  <div class="row"><label style="display:flex;gap:5px;align-items:center"><input id="emptyConfirmed" type="checkbox" style="width:auto"> الإطار خالٍ فعلاً من الدواجن</label><button class="primary" id="saveAnnotation">حفظ الوسم</button></div>
+  <div id="status"></div>
+ </section>
+ <section class="card side"><h2>Veterinary / مراجعة بشرية</h2>
+  <div class="warning">تتبع هذه الشاشة مراجعات بشرية وسلوكيات ملحوظة فقط. حالة «لا مشكلة ظاهرة» لا تستبعد المرض. لا توجد مصادقة على صفة الطبيب هنا.</div>
+  <label for="reviewer">اسم المراجع/الطبيب (يُدخل يدوياً)</label><input id="reviewer" placeholder="الاسم/الصفة" maxlength="100"/>
+  <label for="reviewStatus">حالة المراجعة</label><select id="reviewStatus"><option value="pending">قيد المراجعة</option><option value="needs_inspection">يحتاج فحص القطيع</option><option value="under_review">تحت التقييم</option><option value="no_issue_observed">لم تُلاحظ مشكلة في الصورة</option><option value="follow_up_required">متابعة ضرورية</option></select>
+  <label for="findings">الملاحظات</label><textarea id="findings" maxlength="2000" placeholder="الملاحظات المرئية فقط، دون تشخيص من الصورة"></textarea>
+  <label for="action">الإجراء أو الإحالة</label><textarea id="action" maxlength="1000" placeholder="فحص ماء / زيارة بيطرية / فحص مختبر حسب الحاجة"></textarea>
+  <button class="primary" id="saveReview" style="width:100%">حفظ المراجعة بتاريخها</button>
+  <h2 style="margin-top:20px">سجل المراجعات</h2><div id="reviewHistory"></div>
+  <div class="warning">تقييم الدقة يكون على فيديوهات حقيقية غير مستخدمة بالتدريب. لا تُحسب دقة كشف المرض من مؤشر حركة أو من محاكاة.</div>
+ </section>
+</main>
+<script>
+const $=id=>document.getElementById(id);const canvas=$('imageCanvas'),ctx=canvas.getContext('2d');
+let frames=[],current=null,boxes=[],drag=null,img=new Image(),imgReady=false;
+const post=async(path,obj)=>{const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Poultry-Token':$('writeToken').value.trim()},body:JSON.stringify(obj)});let d=await r.json();if(!r.ok)throw Error(d.error||'HTTP '+r.status);return d};
+const msg=(t,bad=false)=>{$('status').textContent=t;$('status').style.color=bad?'#ffb68c':'#b5efd7'};
+function pos(e){const b=canvas.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(e.clientX-b.left)/b.width)),y:Math.max(0,Math.min(1,(e.clientY-b.top)/b.height))}}
+function render(){ctx.fillStyle='#0b1b25';ctx.fillRect(0,0,canvas.width,canvas.height);if(!imgReady){ctx.fillStyle='white';ctx.font='20px Arial';ctx.fillText('Select a frame',22,40);return}ctx.drawImage(img,0,0,canvas.width,canvas.height);boxes.forEach((b,i)=>drawBox(b,'#00e5a7',i));if(drag){let b=mkBox(drag.start,drag.end);if(b)drawBox(b,'#ffd56a','+')};}
+function drawBox(b,color,i){ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.strokeRect(b.x*canvas.width,b.y*canvas.height,b.w*canvas.width,b.h*canvas.height);ctx.fillStyle=color;ctx.font='bold 14px Arial';ctx.fillText(String(i),b.x*canvas.width+4,Math.max(15,b.y*canvas.height-3));}
+function mkBox(a,b){const x=Math.min(a.x,b.x),y=Math.min(a.y,b.y),w=Math.abs(a.x-b.x),h=Math.abs(a.y-b.y);return w>.008&&h>.008?{class:'chicken',x,y,w,h}:null}
+canvas.addEventListener('pointerdown',e=>{if(!current)return;canvas.setPointerCapture(e.pointerId);drag={start:pos(e),end:pos(e)};render()});
+canvas.addEventListener('pointermove',e=>{if(!drag)return;drag.end=pos(e);render()});
+canvas.addEventListener('pointerup',e=>{if(!drag)return;drag.end=pos(e);let b=mkBox(drag.start,drag.end);if(b){boxes.push(b);$('emptyConfirmed').checked=false;}drag=null;render();});
+$('undo').onclick=()=>{boxes.pop();render()};$('clear').onclick=()=>{boxes=[];render()};
+$('next').onclick=()=>{let i=frames.findIndex(f=>f.id===current?.id);if(frames[i+1])selectFrame(frames[i+1]);};
+async function load(){try{let s=await(await fetch('/api/vision/stats',{cache:'no-store'})).json();$('stats').textContent=`${s.frames} إطار | موسوم: ${s.states.labeled||0} | فارغ مؤكد: ${s.states.empty||0} | مراجعات: ${s.reviews}`;
+let q=$('filter').value;let d=await(await fetch('/api/vision/frames?limit=200'+(q==='all'?'':'&state='+q),{cache:'no-store'})).json();frames=d.frames||[];
+$('frameList').replaceChildren();for(const f of frames){let b=document.createElement('button');b.className='frame'+(current?.id===f.id?' active':'');b.textContent=`${f.camera_id} • ${f.recorded_day} • ${f.frame_seconds.toFixed(1)}s`;
+let sm=document.createElement('small');sm.textContent=f.source+' | '+f.annotation_state+' | '+f.frame_tag;b.append(sm);b.onclick=()=>selectFrame(f);$('frameList').append(b)}
+if(!current&&frames.length)selectFrame(frames[0]);
+$('syncState').textContent='LOCAL • '+Object.keys(s.origins).join('/');await loadReviews();
+}catch(e){msg('تعذر الاتصال ببوابة المراقبة: '+e.message,true);}}
+function selectFrame(f){current=f;boxes=f.boxes.map(b=>({...b}));$('frameTitle').textContent=`${f.camera_id} — ${f.recorded_day}`;$('frameSource').textContent=f.source+' | '+f.width+'×'+f.height;
+$('frameTag').value=f.frame_tag;$('frameNote').value=f.note||'';$('emptyConfirmed').checked=f.annotation_state==='empty';imgReady=false;img=new Image();img.onload=()=>{imgReady=true;canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;render()};img.onerror=()=>msg('Failed to load frame',true);img.src='/api/vision/frame/'+f.id;render();}
+$('saveAnnotation').onclick=async()=>{if(!current)return msg('اختر إطاراً',true);try{await post('/api/vision/annotate',{frame_id:current.id,boxes,tag:$('frameTag').value,note:$('frameNote').value,empty_confirmed:$('emptyConfirmed').checked});msg('تم حفظ الوسم');await load();}catch(e){msg(e.message,true)}};
+$('saveReview').onclick=async()=>{if(!current)return msg('اختر إطاراً',true);try{await post('/api/vision/review',{frame_id:current.id,reviewer:$('reviewer').value,status:$('reviewStatus').value,findings:$('findings').value,action:$('action').value});msg('تم تسجيل المراجعة');await loadReviews()}catch(e){msg(e.message,true)}};
+async function loadReviews(){const d=await(await fetch('/api/vision/reviews')).json();$('reviewHistory').replaceChildren();for(const v of (d.reviews||[]).slice(0,15)){let p=document.createElement('p');p.textContent=`${v.created_at} | ${v.reviewer} | ${v.review_status} | ${v.findings}`;$('reviewHistory').append(p)}}
+$('filter').onchange=()=>{current=null;load()};$('refresh').onclick=load;render();load();
+</script></body></html>

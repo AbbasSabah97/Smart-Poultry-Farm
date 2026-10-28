@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Smart Poultry Farm | Seven Houses 3D</title><link rel="icon" type="image/png" href="/favicon.png"/>
+<style>
+:root{color-scheme:dark;--navy:#091822;--panel:#102e3e;--line:#285269;--cyan:#62d5e8;--muted:#9ebac9;--active:#2fb995;--danger:#f18b72}
+*{box-sizing:border-box}body{margin:0;background:var(--navy);color:#e8f4f7;font-family:'Segoe UI',Tahoma,Arial,sans-serif;overflow:hidden}button{font:inherit;cursor:pointer}
+#app{height:100dvh;display:flex;flex-direction:column;min-height:550px}
+header{flex:none;z-index:5;background:linear-gradient(135deg,#0c2b41,#11374a);border-bottom:3px solid #108bad;box-shadow:0 7px 25px #061721b0;padding:10px 16px 9px}
+.headerline{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;gap:10px;align-items:center}.brand img{width:42px;height:42px;border-radius:8px}.brand strong{font-size:17px}.brand small{display:block;color:var(--muted);font-size:11px}.system-pill{font-size:11px;padding:7px 10px;background:#184251;border:1px solid #32677c;border-radius:6px;color:#b9e5ef}
+.house-picker{display:flex;gap:7px;overflow:auto;padding:8px 0 6px;scrollbar-width:thin}.house-picker button{border:1px solid #397386;background:#153e50;color:#d9f5fa;padding:7px 15px;border-radius:6px;white-space:nowrap;font-size:12px;min-width:86px}.house-picker button.active{background:#0d8e9a;color:white;border-color:#75e1e9;box-shadow:0 0 0 2px #0dd4d447}
+#selectedSummary{display:flex;align-items:center;gap:9px;overflow-x:auto;padding:4px 0 3px;scrollbar-width:thin}
+.info{display:flex;flex-direction:column;min-width:104px;background:#0b293a;border:1px solid #31546b;border-radius:5px;padding:7px 10px}.info small{color:#a4c5d3;font-size:10px}.info b{font-size:17px;direction:ltr;text-align:right;font-variant-numeric:tabular-nums}.info.info-name{min-width:220px;border-color:#33aebd}.info .alarm{color:var(--danger)}
+.headeractions{display:flex;gap:7px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:8px}.toolbar{display:flex;gap:6px;flex-wrap:wrap}.toolbar button{padding:7px 12px;border:1px solid #3c6e83;border-radius:5px;color:#e6f8fb;background:#19465a;font-size:11px;font-weight:600}.toolbar button:hover{background:#256581}.toolbar button.action{background:#117f77;border-color:#42baaa}
+#status{font-size:11px;color:#adcbd9}main{position:relative;flex:1;min-height:0;overflow:hidden}#scene{display:block;width:100%;height:100%;outline:0;touch-action:none}#loading{position:absolute;inset:0;background:#0b1c29;display:grid;place-items:center;color:#d8f3fb;z-index:2;padding:30px;text-align:center}#loading.error{color:#ff9984}
+.overlay-note{position:absolute;bottom:14px;right:14px;left:14px;pointer-events:none;display:flex;justify-content:center}.overlay-note span{background:#082131c9;border:1px solid #2d6576;border-radius:7px;padding:7px 12px;font-size:11px;color:#d0e6ec}
+@media(max-width:860px){.info{min-width:91px}.headeractions{margin-top:5px}.brand strong{font-size:14px}}@media(max-height:700px){header{padding:5px 12px}.house-picker{padding:5px}.info{padding:5px}}
+</style></head><body>
+<div id="app">
+<header>
+ <div class="headerline"><div class="brand"><img src="/favicon.png" alt="أيقونة وجه ديك"/><div><strong>Smart Poultry Farm | 7 Houses 3D</strong><small>المنظور العام للحضائر • محاكاة تعليمية • دون بوابات اتصال</small></div></div><span class="system-pill" id="globalStatus">7 HOUSES · SIMULATION ONLY</span></div>
+ <nav id="housePicker" class="house-picker" aria-label="اختيار الحضيرة"></nav>
+ <section id="selectedSummary" aria-label="بيانات الحضيرة المختارة">
+  <div class="info info-name"><small>الحضيرة المختارة</small><b id="selectedName">H01 — الحظيرة 01</b></div>
+  <div class="info"><small>الحرارة</small><b id="selectedTemp">—</b></div>
+  <div class="info"><small>الرطوبة</small><b id="selectedHumidity">—</b></div>
+  <div class="info"><small>CO₂</small><b id="selectedCo2">—</b></div>
+  <div class="info"><small>NH₃</small><b id="selectedNh3">—</b></div>
+  <div class="info"><small>العلف</small><b id="selectedFeed">—</b></div>
+  <div class="info"><small>الماء</small><b id="selectedWater">—</b></div>
+  <div class="info"><small>الدجاج المرئي</small><b id="selectedBirds">150</b></div>
+  <div class="info"><small>العمر</small><b id="selectedAge">—</b></div>
+  <div class="info"><small>الحالة</small><b id="selectedAlarms">—</b></div>
+ </section>
+ <div class="headeractions"><div class="toolbar">
+  <button id="siteBtn" class="action">عرض الحضائر السبع</button><button id="insideBtn">دخول الحضيرة المختارة</button><button id="feedingBtn">المعالف والمشارب</button><button id="fansBtn">المراوح والتبريد</button><button id="roofBtn">إظهار / إخفاء السقف</button><button id="birdBtn">إظهار / إخفاء الدجاج</button><button id="reportBtn">تصدير بيانات CSV</button><button id="modeBtn">AUTO / MANUAL</button><button id="lightsBtn">إنارة ON/OFF</button><button id="pauseBtn">إيقاف المحاكاة مؤقتاً</button>
+ </div><span id="status">انقر على أحد المباني ثلاثية الأبعاد لتحديث المعلومات أعلاه</span></div>
+</header>
+<main><canvas id="scene" tabindex="0" aria-label="المنظور ثلاثي الأبعاد لسبع حضائر"></canvas>
+ <div id="loading">جارٍ تحميل سبع حضائر ثلاثية الأبعاد ومجسمات الدجاج البيضاء...</div>
+ <div class="overlay-note"><span>الحظائر السبع ظاهرة في المخطط ثلاثي الأبعاد • انقر على مبنى لاختياره • افتح التفاصيل من الزر العلوي • الفأرة: دوران وتقريب</span></div>
+</main></div>
+<script type="module" src="/src/main.js"></script></body></html>

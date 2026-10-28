@@ -1,0 +1,4 @@
+v1.1.1 FIXED SOURCE - material.color error corrected; missing bird status element guarded; HMI fallback added.
+Node tests: see testing log.
+Windows installer: NOT built in this environment.
+3D rendering on Windows: NOT yet verified.

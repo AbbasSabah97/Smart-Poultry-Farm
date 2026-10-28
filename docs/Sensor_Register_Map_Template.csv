@@ -1,0 +1,10 @@
+Tag,Process,Physical sensor,Engineering unit,Gateway protocol,PLC input or register,Conversion,Sampling interval,Verification status
+TEMP_A,Zone A temperature,Temperature transmitter,°C,4-20mA to PLC SM1231 or Modbus,Confirm on site,For transmitter range e.g 0-50°C; use manufacturer scale,15s,UNVERIFIED
+TEMP_B,Zone B temperature,Temperature transmitter,°C,4-20mA to PLC SM1231 or Modbus,Confirm on site,Confirm from datasheet,15s,UNVERIFIED
+HUMIDITY,Relative humidity,Humidity transmitter,%,4-20mA or Modbus,Confirm on site,Confirm from datasheet,15s,UNVERIFIED
+CO2,Air carbon dioxide,NDIR CO2 sensor,ppm,Modbus RTU/TCP or current,Confirm on site,Confirm from datasheet,15s,UNVERIFIED
+NH3,Ammonia,Industrial NH3 analyzer,ppm,4-20mA or Modbus,Confirm on site,Confirm from datasheet,15s,UNVERIFIED
+WATER_FLOW,Drinking water flow,Magnetic / ultrasonic / pulse meter,L/min,Digital counter / Modbus,Confirm on site,Confirm scaling and totalizer,15s,UNVERIFIED
+WATER_PRESS,Drinking water pressure,Pressure transmitter,bar,4-20mA to SM1231,Confirm on site,Confirm pressure range,15s,UNVERIFIED
+FAN_FB,Fan running feedback,VFD or contactor auxiliary,boolean,PLC digital contact input,Confirm on site,0 or 1,5s,UNVERIFIED
+CAM_A,Camera activity,IP camera stream,ratio,RTSP over LAN,Configured ENV only,Low-FPS frame difference not bird diagnosis,3s,UNVERIFIED
